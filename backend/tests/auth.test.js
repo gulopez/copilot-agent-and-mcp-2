@@ -23,9 +23,12 @@ describe('Auth API', () => {
   });
 
   it('POST /api/register should succeed with valid data', async () => {
-    const res = await request(app).post('/api/register').send(testUser);
+    const res = await request(app).post('/api/register').send({ ...testUser, userType: 'administrator' });
     // 201 or 409 if already exists
     expect([201, 409]).toContain(res.statusCode);
+    const usersFile = path.join(__dirname, '../data/test-users.json');
+    const users = JSON.parse(require('fs').readFileSync(usersFile, 'utf-8'));
+    expect(users.find(user => user.username === testUser.username).userType).toBe('member');
   });
 
   it('POST /api/register should fail if user already exists', async () => {
@@ -39,6 +42,19 @@ describe('Auth API', () => {
     const res = await request(app).post('/api/login').send(testUser);
     expect(res.statusCode).toBe(200);
     expect(res.body.token).toBeDefined();
+    expect(res.body.userType).toBe('member');
+  });
+
+  it('POST /api/login should return the administrator user type', async () => {
+    await request(app).post('/api/register').send(testUser); // ensure exists
+    const usersFile = path.join(__dirname, '../data/test-users.json');
+    const users = JSON.parse(require('fs').readFileSync(usersFile, 'utf-8'));
+    users.find(user => user.username === testUser.username).userType = 'administrator';
+    require('fs').writeFileSync(usersFile, JSON.stringify(users, null, 2));
+
+    const res = await request(app).post('/api/login').send(testUser);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.userType).toBe('administrator');
   });
 
   it('POST /api/login should fail with wrong password', async () => {

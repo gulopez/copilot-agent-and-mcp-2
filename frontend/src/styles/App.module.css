@@ -53,3 +53,22 @@ button {
 button:hover {
   background: #0056b3;
 }
+
+@media (max-width: 640px) {
+  :global(.app-header) {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem !important;
+  }
+
+  :global(.app-header-controls) {
+    max-width: 100%;
+    flex-wrap: wrap;
+    gap: 0.5rem !important;
+  }
+
+  :global(.app-header-nav) {
+    flex-wrap: wrap;
+    gap: 0.25rem !important;
+  }
+}

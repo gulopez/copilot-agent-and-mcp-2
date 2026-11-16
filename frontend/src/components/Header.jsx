@@ -4,8 +4,10 @@ import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const username = useAppSelector(state => state.user.username);
+  const userType = useAppSelector(state => state.user.userType);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const displayedUserType = userType === 'administrator' ? 'Administrator' : 'Member';
 
   const handleLogout = () => {
     dispatch(logout());
@@ -13,7 +15,7 @@ const Header = () => {
   };
 
   return (
-    <header style={{
+    <header className="app-header" style={{
       width: '100%',
       position: 'fixed',
       top: 0,
@@ -31,8 +33,8 @@ const Header = () => {
     }}>
       <span style={{ fontWeight: 700, fontSize: '1.3rem', letterSpacing: '1px' }}>Book Favorites</span>
       {username && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <nav style={{ display: 'flex', gap: '1rem' }}>
+        <div className="app-header-controls" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <nav className="app-header-nav" style={{ display: 'flex', gap: '1rem' }}>
             <a
               id="books-link"
               href="/books"
@@ -66,8 +68,11 @@ const Header = () => {
               Favorites
             </a>
           </nav>
-          <span style={{ color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', display: 'inline-block' }}>Hi, {username}</span>
-          <button id="logout" onClick={handleLogout} style={{ padding: '0.3rem 1rem', fontSize: '1rem', background: '#fff', color: '#20b2aa', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Logout</button>
+          <span className="app-header-user" style={{ color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', display: 'inline-flex', gap: '0.35rem' }}>
+            <span>Hi, {username}</span>
+            <span aria-label="User type">({displayedUserType})</span>
+          </span>
+          <button id="logout" onClick={handleLogout} style={{ display: 'inline-block', width: 'auto', margin: 0, padding: '0.3rem 1rem', fontSize: '1rem', background: '#fff', color: '#20b2aa', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Logout</button>
         </div>
       )}
     </header>
