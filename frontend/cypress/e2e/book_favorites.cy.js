@@ -5,6 +5,7 @@ describe('Book Favorites App', () => {
   const user = { username, password };
 
   beforeEach(() => {
+    cy.viewport(1000, 660);
     cy.visit('http://localhost:5173');
   });
 
@@ -20,7 +21,25 @@ describe('Book Favorites App', () => {
     cy.get('input[name="password"]').type(user.password);
     cy.get('button#login').click();
     cy.contains(`Hi, ${user.username}`).should('exist');
+    cy.contains('(Member)').should('exist');
     cy.contains('Favorites').should('exist');
+  });
+
+  it('should display an administrator user type after login', () => {
+    cy.clearLocalStorage();
+    cy.viewport(375, 667);
+    cy.intercept('POST', 'http://localhost:4000/api/login', {
+      statusCode: 200,
+      body: { token: 'test-token', userType: 'administrator' },
+    });
+    cy.visit('http://localhost:5173/login');
+    cy.get('input[name="username"]').type('adminuser');
+    cy.get('input[name="password"]').type('password');
+    cy.get('button#login').click();
+    cy.contains('Hi, adminuser').should('exist');
+    cy.contains('(Administrator)')
+      .should('be.visible')
+      .and(($label) => expect($label[0].getBoundingClientRect().right).to.be.lte(375));
   });
 
   it('should show books and allow adding to favorites', () => {
